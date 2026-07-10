@@ -1,0 +1,55 @@
+pipeline {
+
+    agent any
+
+    environment {
+        IMAGE_NAME = "YOUR_DOCKERHUB_USERNAME/myapp"
+    }
+
+    stages {
+
+        stage('Clone') {
+            steps {
+                git(
+                    credentialsId: 'github-creds',
+                    url: 'https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY.git',
+                    branch: 'main'
+                )
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'docker-creds',
+                        usernameVariable: 'USER',
+                        passwordVariable: 'PASS'
+                    )
+                ]) {
+                    sh '''
+                    echo "$PASS" | docker login -u "$USER" --password-stdin
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                sh 'docker push $IMAGE_NAME'
+            }
+        }
+    }
+}
