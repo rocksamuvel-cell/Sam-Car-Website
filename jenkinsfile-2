@@ -4,20 +4,17 @@ pipeline {
 
     stages {
 
-        stage('Docker Login') {
+        stage('Deploy') {
 
             steps {
 
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'docker-creds',
-                        usernameVariable: 'USER',
-                        passwordVariable: 'PASS'
-                    )
-                ]) {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-creds'
+                ]]) {
 
                     sh '''
-                    echo $PASS | docker login -u $USER --password-stdin
+                    aws s3 ls
                     '''
 
                 }
