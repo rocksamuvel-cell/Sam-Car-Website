@@ -1,0 +1,23 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage('Clone Repository') {
+
+            steps {
+
+                git(
+                    credentialsId: 'github-pat',
+                    url: 'https://github.com/rocksamuvel-cell/Sam-Car-Website.git',
+                    branch: 'main'
+                )
+
+            }
+
+        }
+
+    }
+
+}
