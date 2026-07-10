@@ -4,15 +4,21 @@ pipeline {
 
     stages {
 
-        stage('Clone Repository') {
+        stage('Login') {
 
             steps {
 
-                git(
-                    credentialsId: 'github-pat',
-                    url: 'https://github.com/rocksamuvel-cell/Sam-Car-Website.git',
-                    branch: 'main'
-                )
+                withCredentials([usernamePassword(
+                credentialsId: 'docker-creds',
+                usernameVariable: 'USER',
+                passwordVariable: 'PASS')]) {
+
+                    sh '''
+                    echo $USER
+                    echo $PASS
+                    '''
+
+                }
 
             }
 
